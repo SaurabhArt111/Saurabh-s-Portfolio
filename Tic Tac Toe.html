@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --x-color: #ff3366;
+      --o-color: #00e5ff;
+      --x-glow: rgba(255, 51, 102, 0.4);
+      --o-glow: rgba(0, 229, 255, 0.4);
+      --text: #e8e8f0;
+      --muted: #555570;
+      --gap: 10px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(42, 42, 58, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(42, 42, 58, 0.3) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glow orbs */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 51, 102, 0.06) 0%, transparent 70%);
+      top: -100px;
+      left: -100px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb2 {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.06) 0%, transparent 70%);
+      bottom: -100px;
+      right: -100px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    .label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-family: 72px;
+      letter-spacing: 6px;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--x-color), var(--o-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(255, 51, 102, 0.2));
+    }
+
+    /* Score bar */
+    .scoreboard {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .score-item {
+      text-align: center;
+    }
+
+    .score-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .score-val {
+      font-size: 32px;
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 2px;
+    }
+
+    .score-val.x {
+      color: var(--x-color);
+      text-shadow: 0 0 20px var(--x-glow);
+    }
+
+    .score-val.o {
+      color: var(--o-color);
+      text-shadow: 0 0 20px var(--o-glow);
+    }
+
+    .score-val.draw {
+      color: var(--muted);
+    }
+
+    .score-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--border);
+    }
+
+    /* Status */
+    .status {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      height: 20px;
+      transition: color 0.3s;
+    }
+
+    .status.x-turn {
+      color: var(--x-color);
+    }
+
+    .status.o-turn {
+      color: var(--o-color);
+    }
+
+    .status.winner {
+      color: var(--text);
+      font-size: 14px;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* Board */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 110px);
+      grid-template-rows: repeat(3, 110px);
+      gap: var(--gap);
+      position: relative;
+    }
+
+    .cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 56px;
+      letter-spacing: 2px;
+      position: relative;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      overflow: hidden;
+    }
+
+    .cell::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: 4px;
+    }
+
+    .cell:hover:not(.taken) {
+      border-color: #3a3a5a;
+      background: #17171f;
+      transform: scale(1.03);
+    }
+
+    .cell:hover:not(.taken)::before {
+      opacity: 1;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 70%);
+    }
+
+    .cell.x-cell {
+      color: var(--x-color);
+      border-color: rgba(255, 51, 102, 0.3);
+      box-shadow: inset 0 0 30px rgba(255, 51, 102, 0.05), 0 0 15px rgba(255, 51, 102, 0.08);
+      animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .cell.o-cell {
+      color: var(--o-color);
+      border-color: rgba(0, 229, 255, 0.3);
+      box-shadow: inset 0 0 30px rgba(0, 229, 255, 0.05), 0 0 15px rgba(0, 229, 255, 0.08);
+      animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .cell.win-cell.x-cell {
+      background: rgba(255, 51, 102, 0.08);
+      border-color: var(--x-color);
+      box-shadow: inset 0 0 40px rgba(255, 51, 102, 0.15), 0 0 30px rgba(255, 51, 102, 0.3);
+      animation: winPulse 0.5s ease forwards;
+    }
+
+    .cell.win-cell.o-cell {
+      background: rgba(0, 229, 255, 0.08);
+      border-color: var(--o-color);
+      box-shadow: inset 0 0 40px rgba(0, 229, 255, 0.15), 0 0 30px rgba(0, 229, 255, 0.3);
+      animation: winPulse 0.5s ease forwards;
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes winPulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.06);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .taken {
+      cursor: default;
+    }
+
+    /* Restart button */
+    .btn-restart {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 12px 32px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-restart::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+    }
+
+    .btn-restart:hover {
+      border-color: #4a4a6a;
+      color: var(--text);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-restart:hover::before {
+      transform: translateX(100%);
+    }
+
+    /* Current player indicator */
+    .turn-indicator {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .turn-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .turn-dot.x {
+      background: var(--x-color);
+      box-shadow: 0 0 8px var(--x-glow);
+    }
+
+    .turn-dot.o {
+      background: var(--o-color);
+      box-shadow: 0 0 8px var(--o-glow);
+    }
+
+    .turn-dot.inactive {
+      background: var(--border);
+      box-shadow: none;
+      transform: scale(0.6);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="orb2"></div>
+
+  <div class="wrapper">
+    <header>
+      <div class="label">// game arena</div>
+      <h1>TIC TAC TOE</h1>
+    </header>
+
+    <div class="scoreboard">
+      <div class="score-item">
+        <div class="score-label">Player X</div>
+        <div class="score-val x" id="scoreX">0</div>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-item">
+        <div class="score-label">Draws</div>
+        <div class="score-val draw" id="scoreDraw">0</div>
+      </div>
+      <div class="score-divider"></div>
+      <div class="score-item">
+        <div class="score-label">Player O</div>
+        <div class="score-val o" id="scoreO">0</div>
+      </div>
+    </div>
+
+    <div class="turn-indicator">
+      <div class="turn-dot x" id="dotX"></div>
+      <div id="status" class="status x-turn">Player X — Your Move</div>
+      <div class="turn-dot o inactive" id="dotO"></div>
+    </div>
+
+    <div class="board" id="board">
+      <div class="cell" onclick="play(this,0)"></div>
+      <div class="cell" onclick="play(this,1)"></div>
+      <div class="cell" onclick="play(this,2)"></div>
+      <div class="cell" onclick="play(this,3)"></div>
+      <div class="cell" onclick="play(this,4)"></div>
+      <div class="cell" onclick="play(this,5)"></div>
+      <div class="cell" onclick="play(this,6)"></div>
+      <div class="cell" onclick="play(this,7)"></div>
+      <div class="cell" onclick="play(this,8)"></div>
+    </div>
+
+    <button class="btn-restart" onclick="resetGame()">↺ &nbsp; New Round</button>
+  </div>
+
+  <script>
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let player = "X";
+    let gameOver = false;
+    let scores = { X: 0, O: 0, Draw: 0 };
+
+    const winPatterns = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    function updateTurnIndicator() {
+      const dotX = document.getElementById('dotX');
+      const dotO = document.getElementById('dotO');
+      const status = document.getElementById('status');
+
+      if (player === 'X') {
+        dotX.classList.remove('inactive');
+        dotX.classList.add('x');
+        dotO.classList.add('inactive');
+        status.className = 'status x-turn';
+        status.textContent = 'Player X — Your Move';
+      } else {
+        dotO.classList.remove('inactive');
+        dotO.classList.add('o');
+        dotX.classList.add('inactive');
+        status.className = 'status o-turn';
+        status.textContent = 'Player O — Your Move';
+      }
+    }
+
+    function play(cell, index) {
+      if (board[index] !== "" || gameOver) return;
+      board[index] = player;
+      cell.textContent = player;
+      cell.classList.add('taken', player === 'X' ? 'x-cell' : 'o-cell');
+      checkWinner();
+      if (!gameOver) {
+        player = player === "X" ? "O" : "X";
+        updateTurnIndicator();
+      }
+    }
+
+    function checkWinner() {
+      for (let pattern of winPatterns) {
+        let [a, b, c] = pattern;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          const cells = document.querySelectorAll('.cell');
+          [a, b, c].forEach(i => cells[i].classList.add('win-cell'));
+
+          const status = document.getElementById('status');
+          status.className = 'status winner';
+          status.textContent = `Player ${board[a]} Wins!`;
+
+          scores[board[a]]++;
+          document.getElementById('score' + board[a]).textContent = scores[board[a]];
+
+          // Hide dots
+          document.getElementById('dotX').classList.add('inactive');
+          document.getElementById('dotO').classList.add('inactive');
+
+          gameOver = true;
+          return;
+        }
+      }
+
+      if (!board.includes("")) {
+        const status = document.getElementById('status');
+        status.className = 'status winner';
+        status.textContent = "It's a Draw";
+        scores.Draw++;
+        document.getElementById('scoreDraw').textContent = scores.Draw;
+        document.getElementById('dotX').classList.add('inactive');
+        document.getElementById('dotO').classList.add('inactive');
+        gameOver = true;
+      }
+    }
+
+    function resetGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      player = "X";
+      gameOver = false;
+      document.querySelectorAll('.cell').forEach(cell => {
+        cell.textContent = "";
+        cell.className = 'cell';
+      });
+      updateTurnIndicator();
+    }
+  </script>
+</body>
+
+</html>

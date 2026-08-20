@@ -1,0 +1,180 @@
+
+        /* 3D animation */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Color Root */
+        :root {
+            --first-page-color: linear-gradient(360deg, #fff, #eee);
+            --page-color: #fff;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            user-select: none;
+            background-color: inherit;
+            font-family: 'Jost', sans-serif;
+            position: relative;
+            scroll-behavior: smooth;
+        }
+
+        /* scroll bar */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #333;
+        }
+
+        /* Navigation bar */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 7%;
+            width: 100%;
+            padding: 0 20px;
+            background-color: transparent;
+            position: fixed;
+            z-index: 999;
+            font-size: 22px;
+        }
+
+        nav h1 {
+            font-weight: 400;
+        }
+        /* Logo */
+        .logo {
+            width: 40px;
+            height: 40px;
+            overflow: hidden;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .logo img {
+            height: 40px;
+            width: 40px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        nav button {
+            width: 100px;
+            height: 40px;
+            border-radius: 50px;
+            background: #000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        nav button:hover {
+            background: #b2b2b2;
+            color: #000;
+            transition: all 0.3s ease;
+        }
+
+        /* main */
+        #main {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #page {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('https://i.pinimg.com/previews/u4kbnLmi.jpeg') no-repeat center center/cover;
+        }
+
+        #page1 {
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #page2 {
+            height: 100vh;
+            width: 100vw;
+            background-color: var(--first-page-color);
+        }
+
+        #page3 {
+            height: 100vh;
+            width: 100vw;
+            background-color: var(--first-page-color);
+        }
+
+        #page4 {
+            height: 100vh;
+            width: 100vw;
+            background-color: var(--first-page-color);
+        }
+        #page5 {
+            height: 100vh;
+            width: 100vw;
+            background-color: var(--first-page-color);
+        }
+        #page6 {
+            height: 100vh;
+            width: 100vw;
+            background-color: var(--first-page-color);
+        }
+
+        canvas {
+            scroll-behavior: smooth;
+            max-height: 100vh;
+            max-width: 100vw;
+            position: fixed;
+            bottom: 0;
+        }
+
+        #loop {
+            position: absolute;
+            top: 30%;
+            width: 100%;
+            height: 12rem;
+            background: transparent;
+            color: rebeccapurple;
+            font-size: 90px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+        }
+
+        #loop h1 {
+            font-weight: 400;
+            animation: moving-h1  18s linear infinite;
+        }
+
+        @keyframes moving-h1 {
+            from { /* 0% */ 
+                transform: translateX(0%);
+            }
+            to { /* 100% */ 
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Go to Top Button */
+        .top {
+            position: absolute;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            height: 50px;
+            width: 50px;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+
+        }
+        .top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }

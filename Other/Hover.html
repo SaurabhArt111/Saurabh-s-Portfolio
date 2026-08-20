@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hover Effect</title>
+
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://i.pinimg.com/1200x/43/9c/ac/439cac3a532f2ce137e1ad9d7bb221ae.jpg') no-repeat center center/cover;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hover_gallery {
+            margin-top: 5rem;
+            display: flex;
+            height: 40rem;
+            gap: 6px;
+        }
+
+        .hover_gallery div {
+            flex: 1;
+            cursor: pointer;
+            border-radius: 8px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: auto 100%;
+            transition: all .8s cubic-bezier(.25, .4, .45, 1.4);
+        }
+
+        .hover_gallery div:hover {
+            flex: 5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hover_gallery">
+        <div style="background-image: url('https://i.pinimg.com/1200x/87/ad/0d/87ad0d765df6a9434585cc7874deac67.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/736x/a0/30/e9/a030e97561a760a240d8c63ced700115.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/736x/f2/24/74/f22474d2ee64e2b832a61394ca682989.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/1200x/7b/ac/e7/7bace75d842df61f2f96cd5ab3ac1365.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/1200x/95/81/41/9581412d748dc471633b054339142951.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/736x/2f/9b/2c/2f9b2c7e97e117c7a370f1af704e4cc0.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/1200x/a1/a1/8e/a1a18ee7c7e086092005ce67f2b5ce6f.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/1200x/dd/83/d4/dd83d4f7d456810d98e91adde97da5bd.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/1200x/9b/b0/24/9bb02427893d021cfa52ff4b0d8c7cac.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/736x/a1/80/87/a1808743f993a40d474ff2726f97d2a6.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/736x/76/16/f5/7616f507ef0e9364d65664e02aec6714.jpg');">
+        </div>
+        <div style="background-image: url('https://i.pinimg.com/1200x/cb/cc/4c/cbcc4cd97bb42f329be6ae48c2aa2590.jpg');">
+        </div>
+    </div>
+</body>
+
+</html>

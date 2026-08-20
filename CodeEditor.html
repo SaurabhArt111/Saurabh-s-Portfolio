@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0d0d14">
+  <title>CodeCraft Editor</title>
+  <link rel="icon" href="https://img.icons8.com/?size=100&id=iJ3_5dOpucEi&format=png&color=000000">
+  <!-- <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"> -->
+
+  <style>
+    /* ─── Reset & Base ───────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+
+    :root {
+      --bg: #0d0d14;
+      --surface: #12121e;
+      --surface2: #1a1a2e;
+      --surface3: #1e1e32;
+      --border: rgba(255, 255, 255, 0.07);
+      --border2: rgba(255, 255, 255, 0.12);
+      --accent: #7c6af7;
+      --accent2: #a78bfa;
+      --accent-glow: rgba(124, 106, 247, 0.25);
+      --html-clr: #f97316;
+      --css-clr: #3b82f6;
+      --js-clr: #eab308;
+      --text: #e8e8f0;
+      --text-muted: rgba(232, 232, 240, 0.45);
+      --text-dim: rgba(232, 232, 240, 0.25);
+      --success: #22c55e;
+      --danger: #ef4444;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --nav-h: 58px;
+      --bottom-h: 62px;
+      --tab-h: 42px;
+      --status-h: 30px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      --font-ui: 'Syne', sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg);
+      color: var(--text);
+      height: 100%;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Scrollbar ─────────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 99px;
+    }
+
+    /* ─── Top Nav ───────────────────────────────────────── */
+    .topnav {
+      height: var(--nav-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: 10px;
+      flex-shrink: 0;
+      z-index: 100;
+      padding-top: env(safe-area-inset-top);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 4px 14px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
+    .logo-text span {
+      color: var(--accent2);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      transition: all .2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      background: var(--surface3);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .icon-btn:active {
+      transform: scale(.93);
+    }
+
+    .btn {
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .2s ease;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:hover {
+      background: var(--surface3);
+      border-color: var(--border2);
+    }
+
+    .btn:active {
+      transform: scale(.95);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      opacity: .9;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    /* ─── Layout ────────────────────────────────────────── */
+    .workspace {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Desktop: side by side */
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .panel-divider {
+      width: 4px;
+      background: var(--border);
+      flex-shrink: 0;
+      cursor: col-resize;
+      transition: background .2s;
+    }
+
+    .panel-divider:hover {
+      background: var(--accent);
+    }
+
+    /* ─── Tabs ──────────────────────────────────────────── */
+    .tabs-bar {
+      height: var(--tab-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+      padding: 0 8px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      padding: 0 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .2s ease;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+    }
+
+    .tab-btn.active[data-tab="html"] {
+      border-bottom-color: var(--html-clr);
+    }
+
+    .tab-btn.active[data-tab="css"] {
+      border-bottom-color: var(--css-clr);
+    }
+
+    .tab-btn.active[data-tab="js"] {
+      border-bottom-color: var(--js-clr);
+    }
+
+    .tab-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    [data-tab="html"] .tab-dot {
+      background: var(--html-clr);
+    }
+
+    [data-tab="css"] .tab-dot {
+      background: var(--css-clr);
+    }
+
+    [data-tab="js"] .tab-dot {
+      background: var(--js-clr);
+    }
+
+    /* ─── Editor Pane ───────────────────────────────────── */
+    .editor-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .editor-pane {
+      display: none;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+    }
+
+    .editor-pane.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .code-area {
+      flex: 1;
+      width: 100%;
+      padding: 16px;
+      background: #0a0a12;
+      color: #d4d4e8;
+      border: none;
+      font-family: var(--font-code);
+      font-size: 13.5px;
+      line-height: 1.7;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .code-area::placeholder {
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .code-area:focus {
+      box-shadow: inset 0 0 0 1px rgba(124, 106, 247, 0.2);
+    }
+
+    /* ─── Status Bar ────────────────────────────────────── */
+    .status-bar {
+      height: var(--status-h);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-family: var(--font-code);
+      color: var(--text-muted);
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .status-tag {
+      padding: 1px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .5px;
+    }
+
+    /* ─── Preview Pane ──────────────────────────────────── */
+    .preview-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-toolbar {
+      height: var(--tab-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      flex-shrink: 0;
+    }
+
+    .preview-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      letter-spacing: .3px;
+    }
+
+    .preview-title svg {
+      opacity: .6;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .preview-wrap {
+      flex: 1;
+      padding: 12px;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    iframe#preview {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: block;
+    }
+
+    /* ─── Bottom Nav (Mobile) ───────────────────────────── */
+    .bottom-nav {
+      display: none;
+      height: var(--bottom-h);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      align-items: stretch;
+      flex-shrink: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 200;
+    }
+
+    .bnav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .4px;
+      cursor: pointer;
+      transition: all .2s ease;
+      -webkit-tap-highlight-color: transparent;
+      padding: 6px 4px;
+    }
+
+    .bnav-item svg {
+      width: 20px;
+      height: 20px;
+      transition: all .2s;
+    }
+
+    .bnav-item.active {
+      color: var(--accent2);
+    }
+
+    .bnav-item.active svg {
+      filter: drop-shadow(0 0 6px var(--accent-glow));
+    }
+
+    .bnav-item:active {
+      transform: scale(.9);
+    }
+
+    .bnav-divider {
+      width: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+
+    /* Mobile panel switching */
+    @media (max-width: 768px) {
+      .panel-divider {
+        display: none;
+      }
+
+      .workspace {
+        position: relative;
+      }
+
+      .panel,
+      .preview-panel {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(10px);
+        transition: opacity .25s ease, transform .25s ease;
+      }
+
+      .panel.mobile-active,
+      .preview-panel.mobile-active {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateX(0);
+      }
+
+      .bottom-nav {
+        display: flex;
+      }
+
+      .nav-actions .btn-text {
+        display: none;
+      }
+
+      .topnav {
+        padding: 0 12px;
+      }
+
+      .logo-text {
+        font-size: 15px;
+      }
+    }
+
+    /* ─── Modal Overlay ─────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-bottom: none;
+      border-radius: 20px 20px 0 0;
+      padding: 28px 24px 32px;
+      transform: translateY(100%);
+      transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    @media (min-width: 769px) {
+      .modal-overlay {
+        align-items: center;
+      }
+
+      .modal-sheet {
+        border-bottom: 1px solid var(--border2);
+        border-radius: 16px;
+        transform: translateY(20px) scale(.97);
+        transition: transform .25s ease, opacity .25s ease;
+        opacity: 0;
+      }
+
+      .modal-overlay.open .modal-sheet {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-overlay.open .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border2);
+      border-radius: 99px;
+      margin: 0 auto 20px;
+    }
+
+    @media (min-width: 769px) {
+      .modal-handle {
+        display: none;
+      }
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-title svg {
+      color: var(--accent2);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 44px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 0 14px;
+      color: var(--text);
+      font-family: var(--font-code);
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+    }
+
+    .form-select {
+      width: 100%;
+      height: 44px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 0 14px;
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237c6af7' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .form-select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-select option {
+      background: var(--surface2);
+    }
+
+    .input-suffix {
+      position: relative;
+    }
+
+    .input-suffix .form-input {
+      padding-right: 56px;
+    }
+
+    .suffix-label {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      font-family: var(--font-code);
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      height: 44px;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    /* ─── Toast ─────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--bottom-h) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      opacity: 0;
+      transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    @media (min-width: 769px) {
+      .toast {
+        bottom: 24px;
+      }
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success {
+      border-color: rgba(34, 197, 94, .3);
+    }
+
+    .toast.error {
+      border-color: rgba(239, 68, 68, .3);
+    }
+
+    .toast-icon {
+      font-size: 15px;
+    }
+
+    /* ─── Confirm Dialog ────────────────────────────────── */
+    .confirm-dialog {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+      padding: 24px;
+    }
+
+    .confirm-dialog.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .confirm-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 28px 24px 24px;
+      max-width: 360px;
+      width: 100%;
+      transform: scale(.95);
+      transition: transform .2s ease;
+    }
+
+    .confirm-dialog.open .confirm-box {
+      transform: scale(1);
+    }
+
+    .confirm-box h3 {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .confirm-box p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .confirm-actions .btn {
+      flex: 1;
+      height: 42px;
+      justify-content: center;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    /* ─── Light Theme ───────────────────────────────────── */
+    body.light {
+      --bg: #f0f0f8;
+      --surface: #ffffff;
+      --surface2: #f5f5fc;
+      --surface3: #eeeef8;
+      --border: rgba(0, 0, 0, 0.08);
+      --border2: rgba(0, 0, 0, 0.13);
+      --text: #1a1a2e;
+      --text-muted: rgba(26, 26, 46, 0.5);
+      --text-dim: rgba(26, 26, 46, 0.25);
+    }
+
+    body.light .code-area {
+      background: #fafafa;
+      color: #2d2d4e;
+    }
+
+    body.light iframe#preview {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .12);
+    }
+
+    /* ─── Animations ────────────────────────────────────── */
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .4;
+      }
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+
+    /* ─── Divider drag helper ───────────────────────────── */
+    .workspace.dragging {
+      cursor: col-resize;
+      user-select: none;
+    }
+
+    .workspace.dragging iframe {
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Top Nav ─────────────────────────────────────── -->
+  <header class="topnav">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">Code<span>Craft</span></span>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+      <button class="icon-btn" id="clearBtn" title="Clear all" aria-label="Clear all">🗑️</button>
+      <button class="btn btn-primary" id="downloadBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        <span class="btn-text">Download</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Workspace ────────────────────────────────────── -->
+  <main class="workspace" id="workspace">
+
+    <!-- Editor Panel -->
+    <section class="panel mobile-active" id="editorPanel" aria-label="Code Editor">
+      <div class="tabs-bar">
+        <button class="tab-btn active" data-tab="html" onclick="switchTab(this,'html')">
+          <span class="tab-dot"></span>HTML
+        </button>
+        <button class="tab-btn" data-tab="css" onclick="switchTab(this,'css')">
+          <span class="tab-dot"></span>CSS
+        </button>
+        <button class="tab-btn" data-tab="js" onclick="switchTab(this,'js')">
+          <span class="tab-dot"></span>JS
+        </button>
+      </div>
+
+      <div class="editor-wrap">
+        <div class="editor-pane active" id="pane-html">
+          <textarea id="html-code" class="code-area" spellcheck="false" autocomplete="off" autocorrect="off"
+            autocapitalize="off" placeholder="<!-- Write your HTML here... -->"></textarea>
+        </div>
+        <div class="editor-pane" id="pane-css">
+          <textarea id="css-code" class="code-area" spellcheck="false" autocomplete="off" autocorrect="off"
+            autocapitalize="off" placeholder="/* Write your CSS here... */"></textarea>
+        </div>
+        <div class="editor-pane" id="pane-js">
+          <textarea id="js-code" class="code-area" spellcheck="false" autocomplete="off" autocorrect="off"
+            autocapitalize="off" placeholder="// Write your JavaScript here..."></textarea>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-left">
+          <span class="live-dot"></span>
+          <span id="editor-status">Live</span>
+          <span class="status-tag" id="lang-tag" style="background:rgba(249,115,22,.15);color:#f97316;">HTML</span>
+        </div>
+        <span id="char-count">0 chars</span>
+      </div>
+    </section>
+
+    <!-- Resize Divider (desktop only) -->
+    <div class="panel-divider" id="divider"></div>
+
+    <!-- Preview Panel -->
+    <section class="panel preview-panel" id="previewPanel" aria-label="Live Preview">
+      <div class="preview-toolbar">
+        <div class="preview-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+          </svg>
+          Live Preview
+        </div>
+        <div class="preview-actions">
+          <button class="icon-btn" onclick="refreshPreview()" title="Refresh preview">🔄</button>
+          <button class="icon-btn" id="fullscreenBtn" title="Fullscreen preview">⛶</button>
+        </div>
+      </div>
+      <div class="preview-wrap">
+        <iframe id="preview" sandbox="allow-scripts allow-modals"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── Bottom Nav (Mobile) ──────────────────────────── -->
+  <nav class="bottom-nav" id="bottomNav" aria-label="Mobile navigation">
+    <button class="bnav-item active" data-view="editor" onclick="mobileNav(this,'editor')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6" />
+        <polyline points="8 6 2 12 8 18" />
+      </svg>
+      Editor
+    </button>
+    <div class="bnav-divider"></div>
+    <button class="bnav-item" data-view="preview" onclick="mobileNav(this,'preview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <path d="M8 21h8M12 17v4" />
+      </svg>
+      Preview
+    </button>
+    <div class="bnav-divider"></div>
+    <button class="bnav-item" onclick="openDownloadModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      Save
+    </button>
+  </nav>
+
+  <!-- ── Download Modal ───────────────────────────────── -->
+  <div class="modal-overlay" id="downloadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modalTitle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        Download File
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fileName">File Name</label>
+        <div class="input-suffix">
+          <input type="text" id="fileName" class="form-input" value="my-project" placeholder="Enter filename…">
+          <span class="suffix-label" id="fileExt">.html</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="downloadType">Download As</label>
+        <select id="downloadType" class="form-select" onchange="onTypeChange()">
+          <option value="full">Full HTML (with embedded CSS & JS)</option>
+          <option value="html">HTML only</option>
+          <option value="css">CSS only</option>
+          <option value="js">JavaScript only</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="closeDownloadModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="doDownload()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Confirm Clear Dialog ─────────────────────────── -->
+  <div class="confirm-dialog" id="confirmDialog" role="dialog" aria-modal="true">
+    <div class="confirm-box">
+      <h3>Clear all code?</h3>
+      <p>This will erase everything in all three editors. This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn" onclick="closeConfirm()">Cancel</button>
+        <button class="btn btn-danger" onclick="doClear()">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ────────────────────────────────────────── -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-icon" id="toast-icon">✅</span>
+    <span id="toast-msg"></span>
+  </div>
+
+  <script>
+    /* ── State ─────────────────────────────────────────── */
+    let currentTab = 'html';
+    let previewTimeout = null;
+    const DEBOUNCE = 400;
+
+    /* ── Tab colours ────────────────────────────────────── */
+    const tabMeta = {
+      html: { ext: '.html', label: 'HTML', style: 'background:rgba(249,115,22,.15);color:#f97316;' },
+      css: { ext: '.css', label: 'CSS', style: 'background:rgba(59,130,246,.15);color:#3b82f6;' },
+      js: { ext: '.js', label: 'JS', style: 'background:rgba(234,179,8,.15);color:#eab308;' }
+    };
+
+    /* ── Switch editor tab ─────────────────────────────── */
+    function switchTab(el, tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.editor-pane').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('pane-' + tab).classList.add('active');
+      const meta = tabMeta[tab];
+      document.getElementById('lang-tag').textContent = meta.label;
+      document.getElementById('lang-tag').style.cssText = meta.style;
+      updateCharCount();
+    }
+
+    /* ── Update preview ────────────────────────────────── */
+    function updatePreview() {
+      clearTimeout(previewTimeout);
+      previewTimeout = setTimeout(doUpdatePreview, DEBOUNCE);
+    }
+
+    function doUpdatePreview() {
+      const html = document.getElementById('html-code').value;
+      const css = document.getElementById('css-code').value;
+      const js = document.getElementById('js-code').value;
+      const doc = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>${css}</style>
+</head>
+<body>
+${html}
+<script>${js}<\/script>
+</body>
+</html>`;
+      document.getElementById('preview').srcdoc = doc;
+      updateCharCount();
+    }
+
+    function refreshPreview() {
+      doUpdatePreview();
+      showToast('🔄', 'Preview refreshed');
+    }
+
+    /* ── Char count ─────────────────────────────────────── */
+    function updateCharCount() {
+      const ta = document.getElementById(currentTab + '-code');
+      const n = ta.value.length;
+      document.getElementById('char-count').textContent = n.toLocaleString() + ' chars';
+    }
+
+    /* ── Theme toggle ───────────────────────────────────── */
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      const light = document.body.classList.contains('light');
+      themeBtn.textContent = light ? '🌙' : '☀️';
+      showToast(light ? '☀️' : '🌙', light ? 'Light theme' : 'Dark theme');
+    });
+
+    /* ── Clear ─────────────────────────────────────────── */
+    document.getElementById('clearBtn').addEventListener('click', openConfirm);
+
+    function openConfirm() { document.getElementById('confirmDialog').classList.add('open'); }
+    function closeConfirm() { document.getElementById('confirmDialog').classList.remove('open'); }
+
+    function doClear() {
+      ['html-code', 'css-code', 'js-code'].forEach(id => document.getElementById(id).value = '');
+      doUpdatePreview();
+      closeConfirm();
+      showToast('🗑️', 'All code cleared');
+    }
+
+    /* ── Download modal ─────────────────────────────────── */
+    document.getElementById('downloadBtn').addEventListener('click', openDownloadModal);
+
+    function openDownloadModal() {
+      document.getElementById('downloadModal').classList.add('open');
+      document.getElementById('fileName').focus();
+    }
+
+    function closeDownloadModal() {
+      document.getElementById('downloadModal').classList.remove('open');
+    }
+
+    // Close on overlay click
+    document.getElementById('downloadModal').addEventListener('click', function (e) {
+      if (e.target === this) closeDownloadModal();
+    });
+
+    function onTypeChange() {
+      const type = document.getElementById('downloadType').value;
+      const extMap = { full: '.html', html: '.html', css: '.css', js: '.js' };
+      document.getElementById('fileExt').textContent = extMap[type];
+    }
+
+    function doDownload() {
+      const type = document.getElementById('downloadType').value;
+      const nameRaw = document.getElementById('fileName').value.trim() || 'my-project';
+      const extMap = { full: '.html', html: '.html', css: '.css', js: '.js' };
+      const ext = extMap[type];
+
+      // Strip existing extension if user typed one
+      const cleanName = nameRaw.replace(/\.(html?|css|js)$/i, '');
+      const fileName = cleanName + ext;
+
+      const html = document.getElementById('html-code').value;
+      const css = document.getElementById('css-code').value;
+      const js = document.getElementById('js-code').value;
+
+      let content = '', mime = 'text/plain';
+
+      if (type === 'full') {
+        mime = 'text/html';
+        content = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${cleanName}</title>
+  <style>
+${css}
+  </style>
+</head>
+<body>
+${html}
+  <script>
+${js}
+  <\/script>
+</body>
+</html>`;
+      } else if (type === 'html') {
+        mime = 'text/html'; content = html;
+      } else if (type === 'css') {
+        mime = 'text/css'; content = css;
+      } else {
+        mime = 'text/javascript'; content = js;
+      }
+
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      closeDownloadModal();
+      showToast('💾', `"${fileName}" downloaded`);
+    }
+
+    /* ── Toast ─────────────────────────────────────────── */
+    let toastTimer;
+    function showToast(icon, msg, type = 'success') {
+      clearTimeout(toastTimer);
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-icon').textContent = icon;
+      document.getElementById('toast-msg').textContent = msg;
+      toast.className = 'toast show ' + type;
+      toastTimer = setTimeout(() => toast.className = 'toast', 3000);
+    }
+
+    /* ── Mobile nav ─────────────────────────────────────── */
+    function mobileNav(el, view) {
+      document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      const editor = document.getElementById('editorPanel');
+      const preview = document.getElementById('previewPanel');
+      if (view === 'editor') {
+        editor.classList.add('mobile-active');
+        preview.classList.remove('mobile-active');
+      } else if (view === 'preview') {
+        preview.classList.add('mobile-active');
+        editor.classList.remove('mobile-active');
+        doUpdatePreview();
+      }
+    }
+
+    /* ── Fullscreen preview ─────────────────────────────── */
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    fullscreenBtn.addEventListener('click', () => {
+      const iframe = document.getElementById('preview');
+      if (iframe.requestFullscreen) iframe.requestFullscreen();
+      else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+    });
+
+    /* ── Resizable divider (desktop) ───────────────────── */
+    const divider = document.getElementById('divider');
+    const workspace = document.getElementById('workspace');
+    const editorPnl = document.getElementById('editorPanel');
+    const previewPnl = document.getElementById('previewPanel');
+    let isResizing = false;
+
+    divider.addEventListener('mousedown', (e) => {
+      isResizing = true;
+      workspace.classList.add('dragging');
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isResizing) return;
+      const rect = workspace.getBoundingClientRect();
+      const pct = ((e.clientX - rect.left) / rect.width) * 100;
+      const clamped = Math.max(25, Math.min(75, pct));
+      editorPnl.style.flex = 'none';
+      editorPnl.style.width = clamped + '%';
+      previewPnl.style.flex = '1';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isResizing) return;
+      isResizing = false;
+      workspace.classList.remove('dragging');
+    });
+
+    /* ── Tab key in textarea ───────────────────────────── */
+    ['html-code', 'css-code', 'js-code'].forEach(id => {
+      const ta = document.getElementById(id);
+      ta.addEventListener('input', updatePreview);
+      ta.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const s = ta.selectionStart, end = ta.selectionEnd;
+          ta.value = ta.value.substring(0, s) + '  ' + ta.value.substring(end);
+          ta.selectionStart = ta.selectionEnd = s + 2;
+        }
+      });
+    });
+
+    /* ── Keyboard shortcuts ─────────────────────────────── */
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        openDownloadModal();
+      }
+      if (e.key === 'Escape') {
+        closeDownloadModal();
+        closeConfirm();
+      }
+    });
+
+    /* ── Unsaved changes guard ─────────────────────────── */
+    window.addEventListener('beforeunload', (e) => {
+      const hasCode = ['html-code', 'css-code', 'js-code'].some(id => document.getElementById(id).value.trim());
+      if (hasCode) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    /* ── Init ─────────────────────────────────────────── */
+    doUpdatePreview();
+  </script>
+</body>
+
+</html>

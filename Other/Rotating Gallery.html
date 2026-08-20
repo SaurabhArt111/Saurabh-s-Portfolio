@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotating Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url('https://i.pinimg.com/1200x/43/9c/ac/439cac3a532f2ce137e1ad9d7bb221ae.jpg') no-repeat center center/cover;
+            background-size: cover;
+        }
+
+        .box {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            transform-style: preserve-3d;
+            animation: animate 20s linear infinite;
+        }
+
+        @keyframes animate {
+            0% {
+                transform: perspective(1300px) rotateY(0deg);
+            }
+
+            100% {
+                transform: perspective(1300px) rotateY(360deg);
+            }
+        }
+
+        .box span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80%;
+            height: 100%;
+            aspect-ratio: 3/4;
+            transform-origin: center;
+            transform-style: preserve-3d;
+            transform: rotateY(calc(var(--i) * 45deg)) translateZ(400px);
+            -webkit-box-reflect: below 0px linear-gradient(transparent, transparent, #0004);
+        }
+
+        .box span img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s linear;
+        }
+
+        .box span img:hover {
+            transform: scale(1.3) translateY(-50px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <span style="--i:1;"><img src="https://i.pinimg.com/736x/a0/30/e9/a030e97561a760a240d8c63ced700115.jpg"
+                alt=""></span>
+        <span style="--i:2;"><img src="https://i.pinimg.com/1200x/87/ad/0d/87ad0d765df6a9434585cc7874deac67.jpg"
+                alt=""></span>
+        <span style="--i:3;"><img src="https://i.pinimg.com/736x/f2/24/74/f22474d2ee64e2b832a61394ca682989.jpg"
+                alt=""></span>
+        <span style="--i:4;"><img src="https://i.pinimg.com/1200x/7b/ac/e7/7bace75d842df61f2f96cd5ab3ac1365.jpg"
+                alt=""></span>
+        <span style="--i:5;"><img src="https://i.pinimg.com/1200x/95/81/41/9581412d748dc471633b054339142951.jpg"
+                alt=""></span>
+        <span style="--i:6;"><img src="https://i.pinimg.com/736x/2f/9b/2c/2f9b2c7e97e117c7a370f1af704e4cc0.jpg"
+                alt=""></span>
+        <span style="--i:7;"><img src="https://i.pinimg.com/1200x/a1/a1/8e/a1a18ee7c7e086092005ce67f2b5ce6f.jpg"
+                alt=""></span>
+        <span style="--i:8;"><img src="https://i.pinimg.com/736x/a1/80/87/a1808743f993a40d474ff2726f97d2a6.jpg"
+                alt=""></span>
+    </div>
+
+</body>
+
+</html>

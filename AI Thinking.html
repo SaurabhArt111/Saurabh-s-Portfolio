@@ -1,0 +1,323 @@
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #050505;
+  }
+
+  #orb-wrap {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #050505;
+  }
+
+  #orbCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  #status-text {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+    color: #4af2ff;
+    opacity: 0.8;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  #ring-outer,
+  #ring-mid {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  #ring-outer {
+    width: 110vmin;
+    height: 110vmin;
+    border: 1px solid rgba(74, 242, 255, 0.08);
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+
+  #ring-mid {
+    width: 96vmin;
+    height: 96vmin;
+    border: 1px solid rgba(74, 242, 255, 0.05);
+    animation: ringPulse 3s ease-in-out infinite 1s;
+  }
+
+  @keyframes ringPulse {
+    0%,
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.4;
+    }
+
+    50% {
+      transform: translate(-50%, -50%) scale(1.08);
+      opacity: 1;
+    }
+  }
+</style>
+
+<body>
+
+  <div id="orb-wrap">
+    <div id="ring-outer"></div>
+    <div id="ring-mid"></div>
+    <canvas id="orbCanvas"></canvas>
+    <div id="status-text"></div>
+  </div>
+</body>
+
+<script>
+  (function () {
+    const canvas = document.getElementById('orbCanvas');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status-text');
+    const ringOuter = document.getElementById('ring-outer');
+    const ringMid = document.getElementById('ring-mid');
+
+    const DOT_COUNT = 700;
+    const RADIUS = 180;
+    const dots = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const tasks = [
+      "Analyzing context...",
+      "Searching vector space...",
+      "Optimizing response...",
+      "Synthesizing knowledge...",
+      "Validating logic gates...",
+      "Refining linguistic tone...",
+      "Mapping semantic clusters...",
+      "Resolving tensor fields..."
+    ];
+    let taskIndex = 0;
+
+    let rotationX = 0;
+    let rotationY = 0;
+
+    // Wave bands (top-to-bottom glow sweep)
+    const waveBands = [
+      { y: -RADIUS, speed: 0.9, width: 60, phase: 0 },
+      { y: -RADIUS, speed: 1.3, width: 40, phase: Math.PI * 0.7 },
+      { y: -RADIUS, speed: 0.6, width: 80, phase: Math.PI * 1.4 },
+    ];
+
+    // Scatter particles
+    const particles = [];
+    for (let i = 0; i < 18; i++) {
+      particles.push({
+        angle: Math.random() * Math.PI * 2,
+        radius: RADIUS * (1.1 + Math.random() * 0.3),
+        speed: (Math.random() * 0.003 + 0.001) * (Math.random() > 0.5 ? 1 : -1),
+        size: Math.random() * 1.5 + 0.5,
+        opacity: Math.random() * 0.4 + 0.1,
+        yOffset: (Math.random() - 0.5) * RADIUS * 1.5
+      });
+    }
+
+    for (let i = 0; i < DOT_COUNT; i++) {
+      const phi = Math.acos(-1 + (2 * i) / DOT_COUNT);
+      const theta = Math.sqrt(DOT_COUNT * Math.PI) * phi;
+      dots.push({
+        x: RADIUS * Math.cos(theta) * Math.sin(phi),
+        y: RADIUS * Math.sin(theta) * Math.sin(phi),
+        z: RADIUS * Math.cos(phi),
+        baseSize: Math.random() * 1.5 + 0.8,
+        hue: Math.random() > 0.92 ? 1 : 0 // rare warm accent dots
+      });
+    }
+
+    function rotate(dot, aX, aY) {
+      let cosY = Math.cos(aY), sinY = Math.sin(aY);
+      let x1 = dot.x * cosY - dot.z * sinY;
+      let z1 = dot.x * sinY + dot.z * cosY;
+      let cosX = Math.cos(aX), sinX = Math.sin(aX);
+      let y2 = dot.y * cosX - z1 * sinX;
+      let z2 = dot.y * sinX + z1 * cosX;
+      return { x: x1, y: y2, z: z2 };
+    }
+
+    // Update wave bands (descend top→bottom)
+    function updateWaves(dt) {
+      waveBands.forEach(w => {
+        w.y += w.speed * dt * 60;
+        if (w.y > RADIUS * 1.3) w.y = -RADIUS * 1.3;
+      });
+    }
+
+    function getBandGlow(worldY) {
+      let glow = 0;
+      waveBands.forEach(w => {
+        const dist = Math.abs(worldY - w.y);
+        if (dist < w.width) {
+          glow = Math.max(glow, 1 - dist / w.width);
+        }
+      });
+      return glow;
+    }
+
+    let lastTime = performance.now();
+
+    function draw() {
+      const now = performance.now();
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      updateWaves(dt);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const time = now * 0.001;
+
+      // Ambient core glow — pulsing
+      const coreGlow = 0.5 + 0.5 * Math.sin(time * 1.2);
+      const gr = ctx.createRadialGradient(cx, cy, 0, cx, cy, RADIUS * 0.7);
+      gr.addColorStop(0, `rgba(74,242,255,${0.06 * coreGlow})`);
+      gr.addColorStop(1, 'rgba(74,242,255,0)');
+      ctx.fillStyle = gr;
+      ctx.beginPath();
+      ctx.arc(cx, cy, RADIUS * 0.7, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Equatorial ring
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, 0.18);
+      ctx.beginPath();
+      ctx.arc(0, 0, RADIUS * 1.02, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(74,242,255,${0.12 + 0.06 * coreGlow})`;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.restore();
+
+      // Orbital particles
+      particles.forEach(p => {
+        p.angle += p.speed;
+        const px = cx + Math.cos(p.angle) * p.radius;
+        const py = cy + p.yOffset * 0.15 + Math.sin(p.angle) * p.radius * 0.22;
+        ctx.beginPath();
+        ctx.arc(px, py, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(74,242,255,${p.opacity * (0.6 + 0.4 * Math.sin(time * 2 + p.angle))})`;
+        ctx.fill();
+      });
+
+      // Dots
+      const rotated = dots.map(d => {
+        const r = rotate(d, rotationX, rotationY);
+        return { ...r, baseSize: d.baseSize, hue: d.hue };
+      });
+      rotated.sort((a, b) => b.z - a.z);
+
+      rotated.forEach(dot => {
+        const scale = 900 / (900 + dot.z);
+        const x2d = dot.x * scale + cx;
+        const y2d = dot.y * scale + cy;
+
+        // depth opacity
+        const depthOp = ((dot.z + RADIUS) / (2 * RADIUS)) * 0.85 + 0.15;
+
+        // wave glow based on world Y
+        const glow = getBandGlow(dot.y);
+        const isPulse = glow > 0.82;
+
+        let r, g, b, alpha, size;
+        if (dot.hue === 1) {
+          // warm accent
+          r = 255; g = 180; b = 80;
+          alpha = depthOp * 0.5;
+          size = dot.baseSize * scale * 0.9;
+        } else if (isPulse) {
+          r = 255; g = 255; b = 255;
+          alpha = 1;
+          size = dot.baseSize * 2.2;
+        } else if (glow > 0.25) {
+          const t = glow;
+          r = Math.round(74 + (255 - 74) * t);
+          g = Math.round(242 + (255 - 242) * t);
+          b = 255;
+          alpha = depthOp * (0.5 + 0.5 * t);
+          size = dot.baseSize * scale * (1 + t * 1.5);
+        } else {
+          r = 74; g = 242; b = 255;
+          alpha = depthOp * 0.45;
+          size = dot.baseSize * scale;
+        }
+
+        if (isPulse) {
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = '#4af2ff';
+        } else if (glow > 0.3) {
+          ctx.shadowBlur = glow * 10;
+          ctx.shadowColor = `rgba(74,242,255,${glow * 0.8})`;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+        ctx.beginPath();
+        ctx.arc(x2d, y2d, Math.max(size, 0.4), 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.shadowBlur = 0;
+
+      // Scan line overlay — top-to-bottom sweep
+      waveBands.forEach(w => {
+        const wy = cy + w.y * (900 / (900 + 0));
+        const scanGrad = ctx.createLinearGradient(0, wy - w.width * 0.5, 0, wy + w.width * 0.5);
+        scanGrad.addColorStop(0, 'rgba(74,242,255,0)');
+        scanGrad.addColorStop(0.5, `rgba(74,242,255,${0.03})`);
+        scanGrad.addColorStop(1, 'rgba(74,242,255,0)');
+        ctx.fillStyle = scanGrad;
+        ctx.beginPath();
+        ctx.ellipse(cx, wy, RADIUS * 1.1, w.width * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      rotationX += 0.004;
+      rotationY += 0.007;
+
+      requestAnimationFrame(draw);
+    }
+
+    // Status text with fade
+    setInterval(() => {
+      statusEl.style.opacity = 0;
+      setTimeout(() => {
+        taskIndex = (taskIndex + 1) % tasks.length;
+        statusEl.innerText = tasks[taskIndex];
+        statusEl.style.opacity = 0.8;
+      }, 400);
+    }, 2200);
+
+    draw();
+  })();
+</script>

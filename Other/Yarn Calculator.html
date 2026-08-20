@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Yarn Calculator</title>
+  <style>
+    :root {
+      --accent: #7B5CF6;
+      --accent-glow: rgba(123, 92, 246, 0.35);
+      --radius-card: 28px;
+      --radius-input: 14px;
+      --radius-btn: 16px;
+      --font: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+      --transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: linear-gradient(160deg, #1a1a2e 0%, #16213e 42%, #0f3460 72%, #533483 100%);
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.16);
+      --card-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      --input-bg: rgba(255, 255, 255, 0.09);
+      --input-border: rgba(255, 255, 255, 0.14);
+      --input-focus-bg: rgba(255, 255, 255, 0.15);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.5);
+      --text-tertiary: rgba(255, 255, 255, 0.3);
+      --divider: rgba(255, 255, 255, 0.09);
+      --seg-bg: rgba(255, 255, 255, 0.08);
+      --seg-border: rgba(255, 255, 255, 0.12);
+      --sheet-bg: rgba(24, 18, 50, 0.92);
+      --tile-bg: rgba(255, 255, 255, 0.08);
+      --tile-border: rgba(255, 255, 255, 0.12);
+      --close-bg: rgba(255, 255, 255, 0.1);
+      --close-color: rgba(255, 255, 255, 0.8);
+      --theme-btn-bg: rgba(255, 255, 255, 0.1);
+      --theme-btn-border: rgba(255, 255, 255, 0.15);
+      --theme-btn-color: rgba(255, 255, 255, 0.65);
+      --lang-color: rgba(255, 255, 255, 0.6);
+    }
+
+    [data-theme="light"] {
+      --bg: linear-gradient(160deg, #f0eeff 0%, #e8e4ff 35%, #dcd4ff 65%, #d0c5ff 100%);
+      --card-bg: rgba(255, 255, 255, 0.78);
+      --card-border: rgba(120, 92, 246, 0.18);
+      --card-shadow: 0 8px 40px rgba(100, 60, 200, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      --input-bg: rgba(255, 255, 255, 0.7);
+      --input-border: rgba(120, 92, 246, 0.22);
+      --input-focus-bg: rgba(255, 255, 255, 0.97);
+      --text-primary: #1a0f3a;
+      --text-secondary: rgba(26, 15, 58, 0.55);
+      --text-tertiary: rgba(26, 15, 58, 0.35);
+      --divider: rgba(120, 92, 246, 0.12);
+      --seg-bg: rgba(120, 92, 246, 0.08);
+      --seg-border: rgba(120, 92, 246, 0.15);
+      --sheet-bg: rgba(245, 242, 255, 0.97);
+      --tile-bg: rgba(255, 255, 255, 0.85);
+      --tile-border: rgba(120, 92, 246, 0.15);
+      --close-bg: rgba(120, 92, 246, 0.08);
+      --close-color: rgba(26, 15, 58, 0.7);
+      --theme-btn-bg: rgba(120, 92, 246, 0.08);
+      --theme-btn-border: rgba(120, 92, 246, 0.2);
+      --theme-btn-color: rgba(26, 15, 58, 0.6);
+      --lang-color: rgba(26, 15, 58, 0.55);
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: var(--font);
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--bg);
+      position: relative;
+      overflow-x: hidden;
+      transition: background var(--transition);
+    }
+
+    .scene {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 28px 16px 60px;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 390px;
+    }
+
+    /* ── Theme Bar ── */
+    .theme-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 12px 12px;
+    }
+
+    .theme-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--theme-btn-border);
+      background: var(--theme-btn-bg);
+      color: var(--theme-btn-color);
+      font-family: var(--font);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: 0.1px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .theme-pill svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    .theme-pill.active {
+      background: linear-gradient(135deg, rgba(150, 110, 255, 0.65), rgba(100, 60, 200, 0.75));
+      border-color: rgba(150, 110, 255, 0.45);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(120, 80, 220, 0.4);
+    }
+
+    /* ── Card ── */
+    .card {
+      margin: 0 12px;
+      background: var(--card-bg);
+      backdrop-filter: blur(44px) saturate(180%);
+      -webkit-backdrop-filter: blur(44px) saturate(180%);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .card-header {
+      padding: 26px 24px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--divider);
+      background: rgba(255, 255, 255, 0.03);
+      position: relative;
+    }
+
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--accent) 0%, rgba(123, 92, 246, 0.8) 100%);
+      box-shadow: 0 4px 20px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      border: 1px solid var(--card-border);
+      transition: all var(--transition);
+    }
+
+    .app-icon h3 {
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      line-height: 1;
+      margin: 0;
+      color: #fff;
+    }
+
+    /* Language button inside header */
+    .lang-btn {
+      position: absolute;
+      top: 20px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 11px;
+      border-radius: 20px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--lang-color);
+      font-family: var(--font);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      backdrop-filter: blur(12px);
+    }
+
+    .lang-btn:active {
+      transform: scale(0.95);
+    }
+
+    .theme-btn {
+      position: absolute;
+      top: 20px;
+      left: 18px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 11px;
+      border-radius: 20px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--lang-color);
+      font-family: var(--font);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      backdrop-filter: blur(12px);
+    }
+
+    .theme-btn:active {
+      transform: scale(0.95);
+    }
+
+    .theme-menu {
+      position: absolute;
+      top: 60px;
+      left: 18px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 20px;
+      border: 1px solid var(--input-border);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    .theme-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 16px;
+      border: none;
+      background: transparent;
+      color: rgba(0, 0, 0, 0.7);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .theme-menu-item:hover {
+      background: var(--seg-bg);
+      color: var(--text-primary);
+    }
+
+    .theme-menu-item svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .card-header h1 {
+      color: var(--text-primary);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      transition: color var(--transition);
+    }
+
+    .card-header p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-top: 4px;
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+
+    /* ── Form ── */
+    .form-body {
+      padding: 20px 20px 24px;
+    }
+
+    .field-group {
+      margin-bottom: 14px;
+    }
+
+    .field-label {
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      margin-bottom: 7px;
+      display: block;
+      transition: color var(--transition);
+    }
+
+    .glass-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-input);
+      padding: 14px 16px;
+      color: var(--text-primary);
+      font-size: 16px;
+      font-family: var(--font);
+      font-weight: 500;
+      outline: none;
+      transition: all var(--transition);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .glass-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .glass-input:focus {
+      background: var(--input-focus-bg);
+      border-color: rgba(123, 92, 246, 0.65);
+      box-shadow: 0 0 0 3px rgba(123, 92, 246, 0.18);
+    }
+
+    /* ── Segmented ── */
+    .segmented-control {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--seg-bg);
+      border-radius: var(--radius-input);
+      border: 1px solid var(--seg-border);
+      padding: 3px;
+      gap: 3px;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .seg-btn.active {
+      background: linear-gradient(135deg, rgba(150, 110, 255, 0.6), rgba(100, 60, 200, 0.75));
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(120, 80, 220, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(150, 110, 255, 0.4);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--divider);
+      margin: 18px 0;
+      transition: background var(--transition);
+    }
+
+    .calc-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius-btn);
+      background: linear-gradient(135deg, rgba(150, 110, 255, 0.82), rgba(100, 60, 200, 0.92));
+      color: #fff;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 20px rgba(120, 80, 220, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: 4px;
+    }
+
+    .calc-btn:active {
+      transform: scale(0.974);
+      box-shadow: 0 2px 8px rgba(120, 80, 220, 0.3);
+    }
+
+    .error-msg {
+      color: #ff6b8a;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+
+    /* ── Result Sheet ── */
+    .result-sheet {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+      will-change: opacity;
+    }
+
+    .result-sheet.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sheet-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--sheet-bg);
+      backdrop-filter: blur(60px) saturate(200%);
+      -webkit-backdrop-filter: blur(60px) saturate(200%);
+      border-radius: 28px 28px 0 0;
+      border: 1px solid var(--card-border);
+      border-bottom: none;
+      padding: 0 0 max(40px, env(safe-area-inset-bottom, 40px));
+      box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.4);
+      transform: translateY(100%);
+      transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1), background var(--transition);
+      will-change: transform;
+    }
+
+    .result-sheet.open .sheet-card {
+      transform: translateY(0);
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 5px;
+      background: rgba(123, 92, 246, 0.35);
+      border-radius: 3px;
+      margin: 12px auto 0;
+    }
+
+    .sheet-header {
+      padding: 20px 24px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--divider);
+    }
+
+    .sheet-header h2 {
+      color: var(--text-primary);
+      font-size: 17px;
+      font-weight: 700;
+      transition: color var(--transition);
+    }
+
+    .sheet-header p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-top: 3px;
+      transition: color var(--transition);
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px 20px 0;
+    }
+
+    .result-tile {
+      background: var(--tile-bg);
+      border-radius: 20px;
+      border: 1px solid var(--tile-border);
+      padding: 20px 16px;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .tile-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .tile-label {
+      color: var(--text-secondary);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      transition: color var(--transition);
+    }
+
+    .tile-value {
+      color: var(--text-primary);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      transition: color var(--transition);
+    }
+
+    .tile-unit {
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 2px;
+      transition: color var(--transition);
+    }
+
+    .close-btn {
+      display: block;
+      margin: 16px 20px 0;
+      width: calc(100% - 40px);
+      padding: 15px;
+      border: 1px solid var(--tile-border);
+      border-radius: var(--radius-btn);
+      background: var(--close-bg);
+      color: var(--close-color);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .close-btn:active {
+      transform: scale(0.98);
+    }
+
+    @media (min-width: 600px) {
+      .scene {
+        padding: 48px 24px 64px;
+        align-items: center;
+      }
+
+      .phone-frame {
+        max-width: 400px;
+      }
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+
+  <div class="scene">
+    <div class="phone-frame">
+      <!-- Main Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="app-icon">
+            <h3>🧵</h3>
+          </div>
+          <button class="theme-btn" onclick="toggleThemeMenu()">🎨 <span id="theme-label">Dark</span></button>
+          <button class="lang-btn" onclick="toggleLang()">🌐 <span id="lang-label">हिंदी</span></button>
+          <div class="theme-menu" id="theme-menu">
+            <button class="theme-menu-item" onclick="setTheme('light')">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <circle cx="8" cy="8" r="3.2" />
+                <line x1="8" y1="1" x2="8" y2="2.6" />
+                <line x1="8" y1="13.4" x2="8" y2="15" />
+                <line x1="1" y1="8" x2="2.6" y2="8" />
+                <line x1="13.4" y1="8" x2="15" y2="8" />
+                <line x1="3.2" y1="3.2" x2="4.3" y2="4.3" />
+                <line x1="11.7" y1="11.7" x2="12.8" y2="12.8" />
+                <line x1="12.8" y1="3.2" x2="11.7" y2="4.3" />
+                <line x1="4.3" y1="11.7" x2="3.2" y2="12.8" />
+              </svg>
+              Light
+            </button>
+            <button class="theme-menu-item" onclick="setTheme('dark')">
+              <svg viewBox="0 0 16 16" fill="currentColor">
+                <path d="M14.3 10.5a6.5 6.5 0 01-8.8-8.8 7 7 0 108.8 8.8z" />
+              </svg>
+              Dark
+            </button>
+            <button class="theme-menu-item" onclick="setTheme('system')">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                <rect x="1" y="2.5" width="14" height="9" rx="1.5" />
+                <line x1="5.5" y1="11.5" x2="4.5" y2="14" />
+                <line x1="10.5" y1="11.5" x2="11.5" y2="14" />
+                <line x1="3.5" y1="14" x2="12.5" y2="14" />
+              </svg>
+              Auto
+            </button>
+          </div>
+          <h1 id="title">Warping Calculator</h1>
+          <p id="subtitle">Yarn weight &amp; meter estimator</p>
+        </div>
+
+        <div class="form-body">
+
+          <div class="field-group">
+            <span class="field-label" id="lbl-unit">Order Unit</span>
+            <div class="segmented-control">
+              <button class="seg-btn active" id="seg-meter" onclick="setUnit('Meter')">Meter</button>
+              <button class="seg-btn" id="seg-kg" onclick="setUnit('Kg')">Kilogram</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" id="qty-label" for="quantity">Quantity (meters)</label>
+            <input class="glass-input" type="number" id="quantity" placeholder="Enter quantity" inputmode="decimal"
+              autocomplete="off">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" id="ends-label" for="ends">Number of Ends</label>
+            <input class="glass-input" type="number" id="ends" placeholder="Enter number of ends" inputmode="numeric"
+              autocomplete="off">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" id="denier-label" for="denier">Denier</label>
+            <input class="glass-input" type="number" id="denier" placeholder="Enter denier value" inputmode="decimal"
+              autocomplete="off">
+          </div>
+
+          <div class="divider"></div>
+          <button class="calc-btn" id="calc-btn" onclick="calculate()">Calculate</button>
+          <div class="error-msg" id="error-msg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Sheet -->
+  <div class="result-sheet" id="result-sheet" onclick="closeSheet(event)">
+    <div class="sheet-card">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h2 id="res-title">Calculation Results</h2>
+        <p id="sheet-subtitle">Based on your inputs</p>
+      </div>
+      <div class="result-grid">
+        <div class="result-tile">
+          <div class="tile-icon">⚖️</div>
+          <div class="tile-label" id="lbl-weight">Weight</div>
+          <div class="tile-value" id="res-weight">—</div>
+          <div class="tile-unit" id="unit-weight">kilograms</div>
+        </div>
+        <div class="result-tile">
+          <div class="tile-icon">📏</div>
+          <div class="tile-label" id="lbl-length">Length</div>
+          <div class="tile-value" id="res-meters">—</div>
+          <div class="tile-unit" id="unit-length">meters</div>
+        </div>
+      </div>
+      <button class="close-btn" id="close-btn" onclick="closeSheet()">Done</button>
+    </div>
+  </div>
+
+  <script>
+    /* ── Theme ── */
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    let currentTheme = localStorage.getItem('wc-theme') || 'dark';
+
+    function applyTheme(t) {
+      const resolved = t === 'system' ? (mq.matches ? 'light' : 'dark') : t;
+      document.body.setAttribute('data-theme', resolved);
+    }
+    function setTheme(t) {
+      currentTheme = t;
+      applyTheme(t);
+      localStorage.setItem('wc-theme', t);
+      document.getElementById('theme-label').textContent = { light: 'Light', dark: 'Dark', system: 'Auto' }[t];
+      document.getElementById('theme-menu').style.display = 'none';
+    }
+    function toggleThemeMenu() {
+      const menu = document.getElementById('theme-menu');
+      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    }
+    mq.addEventListener('change', () => { if (currentTheme === 'system') applyTheme('system'); });
+    setTheme(currentTheme);
+
+    /* ── Language ── */
+    let isHindi = false;
+    const S = {
+      en: {
+        langLabel: 'हिंदी',
+        title: 'Warping Calculator',
+        subtitle: 'Yarn weight & meter estimator',
+        lblUnit: 'ORDER UNIT',
+        segMeter: 'Meter', segKg: 'Kilogram',
+        qtyLbl: u => u === 'Meter' ? 'Quantity (meters)' : 'Quantity (kilograms)',
+        qtyPh: u => u === 'Meter' ? 'Enter meters' : 'Enter kilograms',
+        endsLbl: 'NUMBER OF ENDS', endsPh: 'Enter number of ends',
+        denierLbl: 'DENIER', denierPh: 'Enter denier value',
+        calcBtn: 'Calculate', errMsg: 'Please fill all values correctly',
+        resTitle: 'Calculation Results',
+        wLbl: 'WEIGHT', wUnit: 'kilograms',
+        lLbl: 'LENGTH', lUnit: 'meters',
+        closeBtn: 'Done',
+      },
+      hi: {
+        langLabel: 'English',
+        title: 'वार्पिंग कैलकुलेटर',
+        subtitle: 'यार्न वजन और मीटर अनुमानक',
+        lblUnit: 'इकाई',
+        segMeter: 'मीटर', segKg: 'किलोग्राम',
+        qtyLbl: u => u === 'Meter' ? 'मात्रा (मीटर)' : 'मात्रा (किलोग्राम)',
+        qtyPh: u => u === 'Meter' ? 'मीटर दर्ज करें' : 'किलोग्राम दर्ज करें',
+        endsLbl: 'तारों की संख्या', endsPh: 'तार की संख्या दर्ज करें',
+        denierLbl: 'डेनियर', denierPh: 'डेनियर मान दर्ज करें',
+        calcBtn: 'गणना करें', errMsg: 'कृपया सभी मान सही भरें',
+        resTitle: 'गणना परिणाम',
+        wLbl: 'वजन', wUnit: 'किलोग्राम',
+        lLbl: 'लंबाई', lUnit: 'मीटर',
+        closeBtn: 'हो गया',
+      }
+    };
+
+    function render() {
+      const s = isHindi ? S.hi : S.en;
+      document.getElementById('lang-label').textContent = s.langLabel;
+      document.getElementById('title').textContent = s.title;
+      document.getElementById('subtitle').textContent = s.subtitle;
+      document.getElementById('lbl-unit').textContent = s.lblUnit;
+      document.getElementById('seg-meter').textContent = s.segMeter;
+      document.getElementById('seg-kg').textContent = s.segKg;
+      document.getElementById('qty-label').textContent = s.qtyLbl(currentUnit);
+      document.getElementById('quantity').placeholder = s.qtyPh(currentUnit);
+      document.getElementById('ends-label').textContent = s.endsLbl;
+      document.getElementById('ends').placeholder = s.endsPh;
+      document.getElementById('denier-label').textContent = s.denierLbl;
+      document.getElementById('denier').placeholder = s.denierPh;
+      document.getElementById('calc-btn').textContent = s.calcBtn;
+      document.getElementById('res-title').textContent = s.resTitle;
+      document.getElementById('lbl-weight').textContent = s.wLbl;
+      document.getElementById('unit-weight').textContent = s.wUnit;
+      document.getElementById('lbl-length').textContent = s.lLbl;
+      document.getElementById('unit-length').textContent = s.lUnit;
+      document.getElementById('close-btn').textContent = s.closeBtn;
+    }
+    function toggleLang() { isHindi = !isHindi; render(); }
+
+    /* ── Unit ── */
+    let currentUnit = 'Meter';
+    function setUnit(u) {
+      currentUnit = u;
+      document.getElementById('seg-meter').classList.toggle('active', u === 'Meter');
+      document.getElementById('seg-kg').classList.toggle('active', u === 'Kg');
+      const s = isHindi ? S.hi : S.en;
+      document.getElementById('qty-label').textContent = s.qtyLbl(u);
+      document.getElementById('quantity').placeholder = s.qtyPh(u);
+    }
+
+    /* ── Calculate ── */
+    function calculate() {
+      const q = parseFloat(document.getElementById('quantity').value);
+      const e = parseFloat(document.getElementById('ends').value);
+      const d = parseFloat(document.getElementById('denier').value);
+      const s = isHindi ? S.hi : S.en;
+
+      if (!q || !e || !d || q <= 0 || e <= 0 || d <= 0) {
+        document.getElementById('error-msg').textContent = s.errMsg;
+        shakeBtn(); return;
+      }
+      document.getElementById('error-msg').textContent = '';
+
+      let weight, meters;
+      if (currentUnit === 'Meter') {
+        meters = q;
+        weight = (e * meters * d) / 9000000;
+      } else {
+        weight = q;
+        meters = (weight / e / d) * 9000000;
+      }
+
+      document.getElementById('res-weight').textContent = weight.toFixed(3);
+      document.getElementById('res-meters').textContent = Math.round(meters).toLocaleString();
+      document.getElementById('sheet-subtitle').textContent =
+        currentUnit === 'Meter'
+          ? `${q.toLocaleString()} m · ${e} ends · ${d} denier`
+          : `${q} kg · ${e} ends · ${d} denier`;
+
+      const sheet = document.getElementById('result-sheet');
+      requestAnimationFrame(() => {
+        document.activeElement.blur();
+        sheet.classList.add('open');
+      });
+    }
+
+    function closeSheet(e) {
+      if (!e || e.target === document.getElementById('result-sheet'))
+        document.getElementById('result-sheet').classList.remove('open');
+    }
+
+    function shakeBtn() {
+      const btn = document.getElementById('calc-btn');
+      const seq = [5, -5, 4, -4, 2, -2, 0];
+      let i = 0;
+      btn.style.transition = 'transform 0.06s';
+      const t = setInterval(() => {
+        btn.style.transform = `translateX(${seq[i]}px)`;
+        if (++i >= seq.length) { clearInterval(t); btn.style.transition = ''; }
+      }, 55);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter')
+        document.getElementById('result-sheet').classList.contains('open') ? closeSheet() : calculate();
+      if (e.key === 'Escape') closeSheet();
+    });
+
+    render();
+  </script>
+</body>
+
+</html>
