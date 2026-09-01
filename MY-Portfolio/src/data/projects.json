@@ -1,0 +1,112 @@
+[
+  {
+    "id": "code-forge",
+    "index": "01",
+    "name": "Code Forge",
+    "category": "MERN \u00b7 DEVELOPMENT",
+    "description": "A browser-based development workspace and VS Code-inspired web application.",
+    "github": "https://github.com/SaurabhArt111/CodeForge",
+    "live": "https://code-forge-gamma.vercel.app",
+    "featured": true,
+    "mediaLabel": "CODE FORGE"
+  },
+  {
+    "id": "drift-x",
+    "index": "02",
+    "name": "Drift X Commune",
+    "category": "MERN \u00b7 BOOKING",
+    "description": "A premium motorsports and gaming booking experience with management tools.",
+    "github": "https://driftxcommune.com",
+    "live": "https://driftxcommune.com",
+    "featured": true,
+    "mediaLabel": "DRIFT X COMMUNE"
+  },
+  {
+    "id": "game-center-management",
+    "index": "03",
+    "name": "Game Center Management",
+    "category": "MANAGEMENT SYSTEM",
+    "description": "Game-center management and control system for operational workflows.",
+    "github": "https://github.com/SaurabhArt111/Game-Center",
+    "live": "https://driftxcommune.com",
+    "featured": true,
+    "mediaLabel": "GAME CENTER MANAGEMENT"
+  },
+  {
+    "id": "dynamic-qr",
+    "index": "04",
+    "name": "Dynamic QR",
+    "category": "MERN \u00b7 UTILITY",
+    "description": "A dynamic QR management application built for practical everyday use.",
+    "github": "",
+    "live": "https://dynamic-qrcode-gen.vercel.app",
+    "featured": false,
+    "mediaLabel": "DYNAMIC QR"
+  },
+  {
+    "id": "compressor",
+    "index": "05",
+    "name": "Compressor",
+    "category": "MERN \u00b7 WEB APP",
+    "description": "A web application for compressing and handling digital media.",
+    "github": "",
+    "live": "",
+    "featured": false,
+    "mediaLabel": "COMPRESSOR"
+  },
+  {
+    "id": "lan-chat",
+    "index": "06",
+    "name": "LAN-CHAT",
+    "category": "MERN \u00b7 COMMUNICATION",
+    "description": "A local network communication application with a modern chat interface.",
+    "github": "https://github.com/SaurabhArt111/LAN-CHAT",
+    "live": "",
+    "featured": false,
+    "mediaLabel": "LAN-CHAT"
+  },
+  {
+    "id": "attendance-hub",
+    "index": "07",
+    "name": "Attendance Hub",
+    "category": "MERN \u00b7 MANAGEMENT",
+    "description": "An employee attendance and management web application.",
+    "github": "",
+    "live": "https://attendancehub-saas.vercel.app",
+    "featured": false,
+    "mediaLabel": "ATTENDANCE HUB"
+  },
+  {
+    "id": "movie-booking",
+    "index": "08",
+    "name": "Movie Booking",
+    "category": "PHP \u00b7 WEB APP",
+    "description": "A PHP-based movie booking application with database-backed workflows.",
+    "github": "https://github.com/SaurabhArt111/Movie_booking_php",
+    "live": "",
+    "featured": false,
+    "mediaLabel": "MOVIE BOOKING"
+  },
+  {
+    "id": "event-planner",
+    "index": "09",
+    "name": "Event Planner",
+    "category": "MERN \u00b7 MANAGEMENT",
+    "description": "A web application for planning and managing events.",
+    "github": "https://github.com/SaurabhArt111/Event-Planner",
+    "live": "",
+    "featured": false,
+    "mediaLabel": "EVENT PLANNER"
+  },
+  {
+    "id": "quiz_show",
+    "index": "10",
+    "name": "Quiz Show",
+    "category": "MERN \u00b7 GAMES",
+    "description": "A web application for hosting and managing quiz competitions.",
+    "github": "https://github.com/SaurabhArt111/Quiz_Show",
+    "live": "",
+    "featured": true,
+    "mediaLabel": "QUIZ SHOW"
+  }
+]
