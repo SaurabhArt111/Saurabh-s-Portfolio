@@ -20,7 +20,8 @@
         }
 
         * {
-            box-sizing: border-box
+            box-sizing: border-box;
+            user-select: none;
         }
 
         html {
@@ -132,7 +133,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 90px 0 70px
+            padding: 90px 0 70px;
         }
 
         .eyebrow {
@@ -202,7 +203,7 @@
         }
 
         .scroll {
-            margin-top: auto;
+            margin-top: 55px;
             color: var(--muted);
             font-size: 11px;
             letter-spacing: .16em;
@@ -493,7 +494,7 @@
 
         <main>
             <section class="hero" style="border:0">
-                <div class="eyebrow reveal">Independent creative · India</div>
+                <div class="eyebrow reveal">The creative · India</div>
 
                 <h1 aria-label="Saurabh">
                     <span data-hover>S</span>
@@ -507,12 +508,12 @@
 
                 <div class="hero-bottom reveal">
                     <a  class="role">Artist <span>·</span> Designer <span>·</span> Developer</a>
-                    <div class="intro">
+                    <a class="intro">
                         I’m Saurabh Maurya — an artist, graphic designer, and developer who enjoys
                         turning ideas into visual experiences and functional web applications.
                         I work across <strong>design and development</strong>, combining visual craft
                         with modern web technology to build things from the idea stage to a working product.
-                    </div>
+                    </a>
                 </div>
 
                 <div class="scroll reveal"><i></i> The journey begins...</div>
