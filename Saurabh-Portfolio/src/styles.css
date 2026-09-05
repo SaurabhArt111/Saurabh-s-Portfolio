@@ -21,7 +21,8 @@
 }
 
 * {
-    box-sizing: border-box
+    box-sizing: border-box;
+    -webkit-tab-highlight-color: transparent;
 }
 
 html {
