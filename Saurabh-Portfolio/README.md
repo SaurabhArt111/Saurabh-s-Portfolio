@@ -1,4 +1,4 @@
-# Saurabh Maurya — Portfolio v2
+# Saurabh Maurya — Portfolio
 
 Premium React + Vite portfolio combining the editorial layout with the scroll-driven 3D character sequence.
 

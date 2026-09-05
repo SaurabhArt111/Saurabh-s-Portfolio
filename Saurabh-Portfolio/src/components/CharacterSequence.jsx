@@ -52,6 +52,7 @@ export default function CharacterSequence() {
       img.src = framePath(i);
       img.onload = () => {
         loaded++;
+         // draw first frame immediately, then every 8th frame
         if (i === 0 || loaded > 8) {
           draw(currentRef.current);
           if (i === 0) setReady(true);

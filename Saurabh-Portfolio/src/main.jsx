@@ -13,7 +13,7 @@ function ThemeToggle({ dark, setDark }) {
 
 function Nav({ dark, setDark }) {
   return <nav className="nav">
-    <a className="nav-mark" href="#top">S.</a>
+    <a className="nav-mark" href=""><img src="/icons/favicon.svg" alt="S." /></a>
     <div className="nav-links"><a href="#about">About</a><a href="#work">Work</a><a href="#skills">Skills</a><a href="#contact">Contact</a></div>
     <div className="nav-right"><ThemeToggle dark={dark} setDark={setDark} /><a className="resume" href="#contact">Resume ↗</a></div>
   </nav>;
@@ -27,7 +27,7 @@ function Hero() {
       const rect = hero.getBoundingClientRect();
       const range = Math.max(hero.offsetHeight - window.innerHeight, 1);
       const p = Math.min(Math.max(-rect.top / range, 0), 1);
-      hero.style.setProperty('--hero-p', p.toFixed(4));
+      hero.style.setProperty('--hero-p', p.toFixed(6));
       raf = 0;
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
@@ -39,11 +39,12 @@ function Hero() {
   return <section className="hero" id="top">
     <CharacterSequence />
     <div className="hero-vignette" />
-    <div className="hero-meta"><span>PORTFOLIO / 2026</span><span>INDIA</span></div>
+    <div className="hero-meta"><span>PORTFOLIO / 2026</span><span className="INDIA">INDIA</span></div>
     <div className="hero-title-wrap">
-      <div className="hero-echo echo-one">SAURABH</div>
-      <h1 className="hero-title" aria-label="Saurabh">SAURABH</h1>
-      <div className="hero-echo echo-two">SAURABH</div>
+      {/* <div className="hero-echo echo-one">SAURABH</div> */}
+      <h1 className="hero-title" aria-label="Saurabh">SAURABH<br /><span>MAURYA</span></h1>
+      <br />
+      <div className="hero-sub-title"><span>ARTIST</span><b>·</b><span>DESIGNER</span><b>·</b><span>DEVELOPER</span></div>
     </div>
     <div className="hero-copy">
       <div className="roles" aria-label="Artist, Designer, Developer"><span>ARTIST</span><b>·</b><span>DESIGNER</span><b>·</b><span>DEVELOPER</span></div>
@@ -89,7 +90,7 @@ function ProjectModal({ project, close }) {
   if (!project) return null;
   return <div className="modal-shell" onClick={close}>
     <div className="modal" onClick={e => e.stopPropagation()}>
-      <div className="modal-top"><span>{project.index} / {project.category}</span><button onClick={close}>CLOSE ×</button></div>
+      <div className="modal-top"><span>{project.index} / {project.category}</span><button className="modal-close" onClick={close}>CLOSE ×</button></div>
       <h2>{project.name}</h2>
       <p>{project.description}</p>
       <div className="preview-frame">
@@ -124,7 +125,7 @@ function Skills() {
 function Contact() {
   return <section className="section contact" id="contact">
     <Reveal className="section-index"><span>04 / CONTACT</span><em>LET'S MAKE SOMETHING</em></Reveal>
-    <div className="contact-main"><Reveal><h2><SplitText>Let's</SplitText><SplitText>build</SplitText><SplitText accent>something.</SplitText></h2></Reveal><Reveal delay={120}><div className="contact-links"><a href="mailto:hello@saurabhart.in">hello@saurabhart.in ↗</a><a href="https://github.com/SaurabhArt111" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.linkedin.com/in/saurabh-maurya-55a66433b/" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://www.instagram.com/saurabh_art__111/" target="_blank" rel="noreferrer">Instagram ↗</a></div></Reveal></div>
+    <div className="contact-main"><Reveal><h2><SplitText>Let's</SplitText><SplitText>build</SplitText><SplitText accent>something.</SplitText></h2></Reveal><Reveal delay={120}><div className="contact-links"><a href="https://github.com/SaurabhArt111" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.linkedin.com/in/saurabh-maurya-55a66433b/" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="https://www.instagram.com/saurabh_art__111/" target="_blank" rel="noreferrer">Instagram ↗</a></div></Reveal></div>
   </section>;
 }
 

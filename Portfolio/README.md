@@ -1,6 +1,6 @@
 # Saurabh Portfolio
 
-React + Vite portfolio starter for Saurabh Maurya.
+React + Vite portfolio starter of Saurabh Maurya.
 
 ## Run
 npm install
