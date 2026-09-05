@@ -22,7 +22,9 @@
 
 * {
     box-sizing: border-box;
-    -webkit-tab-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent;
+    -moz-tap-highlight-color: transparent;
+    -ms-tap-highlight-color: transparent;
 }
 
 html {
